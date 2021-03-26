@@ -6,11 +6,11 @@ defmodule DevChallengeRyanWeb.V1.BlockChainController do
   alias DevChallengeRyanWeb.Contexts.ValidationContext
   alias DevChallengeRyanWeb.BlockChainView
 
-  def check_status(conn, params) do
-    :check_status
+  def add_transaction_id(conn, params) do
+    :add_transaction_id
     |> BlockChainContext.validate_params(params)
     |> ValidationContext.valid_changeset()
-    |> BlockChainContext.check_status(conn)
+    |> BlockChainContext.add_transaction_id(conn)
     |> return_result(conn)
   end
 

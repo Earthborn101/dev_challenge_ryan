@@ -6,6 +6,8 @@ defmodule DevChallengeRyan.Application do
   use Application
 
   def start(_type, _args) do
+    import Supervisor.Spec
+
     children = [
       # Start the Ecto repository
       DevChallengeRyan.Repo,
@@ -14,7 +16,8 @@ defmodule DevChallengeRyan.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: DevChallengeRyan.PubSub},
       # Start the Endpoint (http/https)
-      DevChallengeRyanWeb.Endpoint
+      DevChallengeRyanWeb.Endpoint,
+      worker(DevChallengeRyanWeb.BackgroundJob, [])
       # Start a worker by calling: DevChallengeRyan.Worker.start_link(arg)
       # {DevChallengeRyan.Worker, arg}
     ]

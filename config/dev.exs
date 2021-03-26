@@ -65,6 +65,10 @@ config :dev_challenge_ryan, DevChallengeRyanWeb.Endpoint,
     ]
   ]
 
+config :dev_challenge_ryan, DevChallengeRyanWeb.UtilityContext,
+  blocknative_url: "https://api.blocknative.com/",
+  api_key: "2457ae16-d5f9-4e61-89b6-fd68a1a90482"
+
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
 

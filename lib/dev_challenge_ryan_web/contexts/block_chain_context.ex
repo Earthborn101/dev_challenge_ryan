@@ -10,10 +10,13 @@ defmodule DevChallengeRyanWeb.Contexts.BlockChainContext do
   alias DevChallengeRyanWeb.Request
 
   ### ALIAS SCHEMAS
-  alias DevChallengeRyan.Schemas.TransactionWatchlist
+  alias DevChallengeRyanWeb.Schemas.TransactionWatchlist
   
   ### ALIAS Changeset
   alias Ecto.Changeset
+
+  ### ALIAS Repo
+  alias DevChallengeRyan.Repo
 
   ### -- Start of validate params -- ###
   def validate_params(:add_transaction_id, params) do
@@ -29,9 +32,30 @@ defmodule DevChallengeRyanWeb.Contexts.BlockChainContext do
       ],
       message: "Enter txid"
     )
+    |> validate_tx_id_if_exist()
     |> UtilityContext.is_valid_changeset_map()
   end
 
+  defp validate_tx_id_if_exist(%{
+    changes: %{
+      txid: txid
+    }
+  } = changeset) do
+    transaction_id =
+      TransactionWatchlist
+      |> Repo.get_by(txid: txid)
+  
+    if is_nil(transaction_id) do
+      changeset
+    else
+      changeset
+      |> Changeset.add_error(
+        :txid,
+        "TX id already exist"
+      )
+    end
+  end
+  defp validate_tx_id_if_exist(changeset), do: changeset
   ### -- End of validate params -- ###
 
   ### -- 
@@ -55,7 +79,15 @@ defmodule DevChallengeRyanWeb.Contexts.BlockChainContext do
   end
 
   defp check_if_suscribe({:ok, %{"msg" => "success"}}, params, changeset) do
+    fields =
+      params
+      |> Map.put(:status, "P")
+    
+    %TransactionWatchlist{}
+    |> TransactionWatchlist.changeset(fields)
+    |> Repo.insert()
 
+    {:ok, %{message: "Successfully suscribe to #{params.txid}"}}
   end
 
   defp check_if_suscribe({:bad_request, _msg}, _params, changeset) do

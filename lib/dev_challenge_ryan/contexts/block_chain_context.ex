@@ -12,9 +12,6 @@ defmodule DevChallengeRyan.Contexts.BlockChainContext do
   ### ALIAS Request
   alias DevChallengeRyanWeb.Request
 
-  ### ALIAS SCHEMAS
-  alias DevChallengeRyanWeb.Schemas.TransactionWatchlist
-
   ### ALIAS Changeset
   alias Ecto.Changeset
 
@@ -35,7 +32,7 @@ defmodule DevChallengeRyan.Contexts.BlockChainContext do
       ],
       message: "Enter txid"
     )
-    |> validate_tx_id_if_exist()
+    # |> validate_tx_id_if_exist()
     |> UtilityContext.is_valid_changeset_map()
   end
 
@@ -92,29 +89,29 @@ defmodule DevChallengeRyan.Contexts.BlockChainContext do
     |> UtilityContext.is_valid_changeset()
   end
 
-  defp validate_tx_id_if_exist(
-         %{
-           changes: %{
-             txid: txid
-           }
-         } = changeset
-       ) do
-    transaction_id =
-      TransactionWatchlist
-      |> Repo.get_by(txid: txid)
+  # defp validate_tx_id_if_exist(
+  #        %{
+  #          changes: %{
+  #            txid: txid
+  #          }
+  #        } = changeset
+  #      ) do
+  #   transaction_id =
+  #     TransactionWatchlist
+  #     |> Repo.get_by(txid: txid)
 
-    if is_nil(transaction_id) do
-      changeset
-    else
-      changeset
-      |> Changeset.add_error(
-        :txid,
-        "TX id already exist"
-      )
-    end
-  end
+  #   if is_nil(transaction_id) do
+  #     changeset
+  #   else
+  #     changeset
+  #     |> Changeset.add_error(
+  #       :txid,
+  #       "TX id already exist"
+  #     )
+  #   end
+  # end
 
-  defp validate_tx_id_if_exist(changeset), do: changeset
+  # defp validate_tx_id_if_exist(changeset), do: changeset
   ### -- End of validate params -- ###
 
   ### -- Start of Add transaction -- ###

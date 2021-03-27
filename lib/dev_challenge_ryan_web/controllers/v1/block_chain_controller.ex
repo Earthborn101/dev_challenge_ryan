@@ -1,9 +1,9 @@
 defmodule DevChallengeRyanWeb.V1.BlockChainController do
   use DevChallengeRyanWeb, :controller
 
-  alias DevChallengeRyanWeb.Contexts.BlockChainContext
-  alias DevChallengeRyanWeb.Contexts.UtilityContext
-  alias DevChallengeRyanWeb.Contexts.ValidationContext
+  alias DevChallengeRyan.Contexts.BlockChainContext
+  alias DevChallengeRyan.Contexts.UtilityContext
+  alias DevChallengeRyan.Contexts.ValidationContext
   alias DevChallengeRyanWeb.BlockChainView
 
   def add_transaction_id(conn, params) do

@@ -2,7 +2,7 @@ defmodule DevChallengeRyanWeb.BackgroundJob do
   use GenServer
   @moduledoc false
 
-  alias DevChallengeRyanWeb.Contexts.BlockChainContext
+  alias DevChallengeRyan.Contexts.BlockChainContext
 
   def start_link(_) do
     GenServer.start_link(__MODULE__, :ok)

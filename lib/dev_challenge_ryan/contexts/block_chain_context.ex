@@ -7,16 +7,13 @@ defmodule DevChallengeRyan.Contexts.BlockChainContext do
   alias DevChallengeRyanWeb.BackgroundJob
 
   ### ALIAS CONTEXTS
-  alias DevChallengeRyanWeb.Contexts.UtilityContext
+  alias DevChallengeRyan.Contexts.UtilityContext
 
   ### ALIAS Request
   alias DevChallengeRyanWeb.Request
 
   ### ALIAS Changeset
   alias Ecto.Changeset
-
-  ### ALIAS Repo
-  alias DevChallengeRyan.Repo
 
   ### -- Start of validate params -- ###
   def validate_params(:add_transaction_id, params) do

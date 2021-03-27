@@ -10,8 +10,9 @@ use Mix.Config
 # which you should run after static files are built and
 # before starting your production server.
 config :dev_challenge_ryan, DevChallengeRyanWeb.Endpoint,
-  url: [scheme: "https", host: "concerned-blind-hoiho.gigalixirapp.com", port: 4000],
+  url: [host: "concerned-blind-hoiho.gigalixirapp.com", port: 80],
   cache_static_manifest: "priv/static/cache_manifest.json"
+  force_ssl: [rewrite_onL [:x_forwarded_proto]]
 
 # Do not print debug messages in production
 config :logger, level: :info

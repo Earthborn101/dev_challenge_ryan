@@ -11,6 +11,7 @@ defmodule DevChallengeRyanWeb.Router do
     scope "/api" do
       scope "/v1", V1 do
         post "/add-transaction-id", BlockChainController, :add_transaction_id
+        post "/get-watch-transactions", BlockChainController, :get_watch_transactions
       end
     end
   end

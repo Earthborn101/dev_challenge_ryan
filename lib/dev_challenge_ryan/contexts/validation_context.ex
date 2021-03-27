@@ -1,4 +1,4 @@
-defmodule DevChallengeRyanWeb.Contexts.ValidationContext do
+defmodule DevChallengeRyan.Contexts.ValidationContext do
   @moduledoc false
 
   def valid_changeset({true, {map, changeset}}), do: {map, changeset}

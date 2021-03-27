@@ -67,7 +67,9 @@ config :dev_challenge_ryan, DevChallengeRyanWeb.Endpoint,
 
 config :dev_challenge_ryan, DevChallengeRyanWeb.UtilityContext,
   blocknative_url: "https://api.blocknative.com/",
-  api_key: "2457ae16-d5f9-4e61-89b6-fd68a1a90482"
+  api_key: "2457ae16-d5f9-4e61-89b6-fd68a1a90482",
+  ether_api_key: "ZT9JGIP34V1INY7ZVD62X986TUE6TEHUWA",
+  etherscan_url: "https://api.etherscan.io/api"
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"

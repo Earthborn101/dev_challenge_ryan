@@ -2,29 +2,29 @@ defmodule DevChallengeRyanWeb.BackgroundJob do
   use GenServer
   @moduledoc false
 
-  def start_link do
-    GenServer.start_link(__MODULE__, %{})
+  alias DevChallengeRyanWeb.Contexts.BlockChainContext
+
+  def start_link(_) do
+    GenServer.start_link(__MODULE__, :ok)
   end
 
   def init(state) do
     # Schedule work to be performed at some point
-    schedule_work()
     {:ok, state}
   end
 
-  def handle_info(:work, state) do
-    # Do the work you desire here
-    # Reschedule once more
-    schedule_work()
+  def send_notification(args) do
+    {:ok, pid} = start_link(:ok)
+    GenServer.cast(pid, {:check_transaction_id, args})
+  end
+
+  @impl true
+  def handle_cast({:check_transaction_id, args}, state) do
+    BlockChainContext.check_transaction_notification(args)
     {:noreply, state}
   end
 
   def handle_info(_, state) do
     {:noreply, state}
-  end
-
-  defp schedule_work do
-    Process.send_after(self(), :work, 10_000)
-    IO.puts("This is a test env")
   end
 end

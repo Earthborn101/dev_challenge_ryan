@@ -26,6 +26,30 @@ defmodule DevChallengeRyanWeb.Request do
     end
   end
 
+  def delete(_conn, nil, _headers), do: {:invalid_url}
+  def deelte(_conn, _url, headers) when not is_list(headers), do: {:invalid_headers}
+
+  def delete(conn, url, headers, _options \\ []) when is_list(headers) do
+    options = [timeout: 600_000, recv_timeout: 600_000]
+
+    case HTTPoison.delete(url, process_request_header(headers), options) do
+      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+        process_response_body(:ok, body)
+
+      {:ok, %HTTPoison.Response{status_code: 400, body: body}} ->
+        process_response_body(:bad_request, body)
+
+      {:ok, %HTTPoison.Response{status_code: 404}} ->
+        {:not_found}
+
+      {:ok, %HTTPoison.Response{status_code: code, body: body}} ->
+        process_response_body(:bad_request, body)
+
+      {:error, %HTTPoison.Error{reason: reason}} ->
+        {:internal_server_error, reason}
+    end
+  end
+
   def get(_conn, nil, _headers), do: {:invalid_url}
   def get(_conn, _url, headers) when not is_list(headers), do: {:invalid_headers}
 
@@ -62,6 +86,7 @@ defmodule DevChallengeRyanWeb.Request do
 
   def body_checker(decoded_body) when is_list(decoded_body), do: decoded_body
   def body_checker(decoded_body) when is_map(decoded_body), do: decoded_body
+  def body_check(%{"msg" => "success"} = decoded_body), do: decoded_body
 
   def body_checker(decoded_body) do
     [decoded_body]

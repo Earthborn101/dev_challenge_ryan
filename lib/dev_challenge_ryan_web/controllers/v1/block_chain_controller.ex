@@ -14,11 +14,10 @@ defmodule DevChallengeRyanWeb.V1.BlockChainController do
     |> return_result(conn)
   end
 
-  def get_watch_transactions(conn, params) do
-    :get_watch_transactions
-    |> BlockChainContext.validate_params(params)
-    |> ValidationContext.valid_changeset()
-    |> BlockChainContext.get_watch_transactions(conn)
+  def check_for_pending_transactions(conn, _params) do
+    return = BlockChainContext.get_watch_transactions()
+
+    return
     |> return_result(conn)
   end
 

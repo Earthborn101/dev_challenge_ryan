@@ -47,7 +47,8 @@ defmodule DevChallengeRyan.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:httpoison, "~> 1.6"},
       {:poison, "~> 3.1"},
-      {:credo, "~> 0.8", only: [:dev, :test], runtime: false}
+      {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
+      {:timex, "~> 3.7"}
     ]
   end
 

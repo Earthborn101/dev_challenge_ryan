@@ -1,4 +1,3 @@
 defmodule DevChallengeRyanWeb.ErrorView do
-    use DevChallengeRyanWeb, :view
+  use DevChallengeRyanWeb, :view
 end
-  

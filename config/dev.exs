@@ -67,9 +67,11 @@ config :dev_challenge_ryan, DevChallengeRyanWeb.Endpoint,
 
 config :dev_challenge_ryan, DevChallengeRyanWeb.UtilityContext,
   blocknative_url: "https://api.blocknative.com/",
+  api_key_2: "d8ebd14b-1662-4422-8ea5-b6a4be21bedf",
+  slack_token_2: "xoxb-1898995580646-1902698037429-lhVxZoe2GJDCAMJ8DVu4A7M4",
   api_key: "2457ae16-d5f9-4e61-89b6-fd68a1a90482",
-  ether_api_key: "ZT9JGIP34V1INY7ZVD62X986TUE6TEHUWA",
-  etherscan_url: "https://api.etherscan.io/api"
+  slack_url: "https://slack.com/",
+  slack_webhook: "https://hooks.slack.com/services/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"
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"

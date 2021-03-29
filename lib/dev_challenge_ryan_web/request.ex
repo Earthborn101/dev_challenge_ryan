@@ -55,8 +55,8 @@ defmodule DevChallengeRyanWeb.Request do
 
   def get(conn, url, headers, options \\ []) when is_list(headers) do
     case HTTPoison.get(url, process_request_header(headers), options) do
-      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        process_response_body(:ok, body)
+      {:ok, %HTTPoison.Response{status_code: 200, body: params}} ->
+        process_response_body(:ok, params)
 
       {:ok, %HTTPoison.Response{status_code: 400, body: body}} ->
         process_response_body(:bad_request, body)

@@ -17,7 +17,7 @@ defmodule DevChallengeRyan.Application do
       {Phoenix.PubSub, name: DevChallengeRyan.PubSub},
       # Start the Endpoint (http/https)
       DevChallengeRyanWeb.Endpoint,
-      DevChallengeRyanWeb.BackgroundJob
+      worker(DevChallengeRyanWeb.BackgroundJob, [])
       # Start a worker by calling: DevChallengeRyan.Worker.start_link(arg)
       # {DevChallengeRyan.Worker, arg}
     ]

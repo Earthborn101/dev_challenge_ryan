@@ -88,10 +88,13 @@ defmodule DevChallengeRyan.Contexts.BlockChainContext do
     |> check_if_suscribe(params, changeset)
   end
 
-  defp check_if_suscribe({:ok, %{"msg" => "success"}}, params, _changeset) do
+  defp check_if_suscribe({:ok, _}, params, _changeset) do
     notify_slack_new_watched_address(params)
-    BackgroundJob.add_notification(params)
-    BackgroundJob.run_notification(params)
+
+    params
+    |> Map.put(:start_time, Timex.now())
+    |> BackgroundJob.add_notification()
+
     {:ok, %{message: "Successfully suscribe to #{params.txid}"}}
   end
 
@@ -136,44 +139,17 @@ defmodule DevChallengeRyan.Contexts.BlockChainContext do
 
   ## -- End of Get watched transactions -- ##
 
-  ## -- Start of check watch transactions -- ##
-  defp check_watch_transactions(
-         %{
-           page: page,
-           size: size,
-           order: order
-         },
-         conn
-       ) do
-    url = Request.process_request_url("transaction", :blocknative_url)
-    api_key = UtilityContext.get_url_or_value(:api_key_2)
-    url = "#{url}/#{api_key}/ethereum/main?page=#{page}&size=#{size}&order=#{order}"
-
-    conn
-    |> Request.get(url, [])
-  end
-
-  defp check_watch_transactions(_params, conn) do
-    url = Request.process_request_url("transaction", :blocknative_url)
-    api_key = UtilityContext.get_url_or_value(:api_key_2)
-    url = "#{url}/#{api_key}/ethereum/main?page=1&size=100&order=desc"
-
-    conn
-    |> Request.get(url, [])
-  end
-
-  ## -- End of check watch transactions -- ##
-
   ## -- Start of Check Transaction -- ##
   def check_transaction_notification(params) do
-    Process.sleep(10_000)
-
     url =
       "api/conversations.history"
       |> Request.process_request_url(:slack_url)
       |> set_query_params()
 
-    slack_token = UtilityContext.get_url_or_value(:slack_token_2)
+    slack_token =
+      :slack_token_2
+      |> UtilityContext.get_url_or_value()
+      |> Base.decode64!()
 
     %{}
     |> Request.get(url, [{"Authorization", "Bearer #{slack_token}"}])
@@ -202,7 +178,7 @@ defmodule DevChallengeRyan.Contexts.BlockChainContext do
     end
   end
 
-  defp find_first_with_txid(_, params), do: params
+  defp find_first_with_txid([], params), do: {:ok, params}
 
   defp check_status(text, params) do
     status_map =
@@ -238,15 +214,12 @@ defmodule DevChallengeRyan.Contexts.BlockChainContext do
     diff = Timex.diff(Timex.now(), start_time, :minute)
 
     if diff >= 2 do
-      IO.puts("#{params.txid} is still ongoing")
       notify_transaction_id_is_still_pending(params)
       params = Map.put(params, :start_time, Timex.now())
 
-      params
-      |> check_transaction_notification()
+      {:pending, params}
     else
-      IO.puts("#{params.txid} goes here")
-      check_transaction_notification(params)
+      {:pending, params}
     end
   end
 
@@ -266,7 +239,14 @@ defmodule DevChallengeRyan.Contexts.BlockChainContext do
 
   ## -- Start of Slacked Notifications -- ##
   defp notify_slack_new_watched_address(params) do
-    url = UtilityContext.get_url_or_value(:slack_webhook)
+    slack_webhook_token =
+      :slack_webhook_token
+      |> UtilityContext.get_url_or_value()
+      |> Base.decode64!()
+
+    url =
+      slack_webhook_token
+      |> Request.process_request_url(:slack_webhook_url)
 
     body = %{
       text: "Hi value customer. \n\n
@@ -281,7 +261,14 @@ defmodule DevChallengeRyan.Contexts.BlockChainContext do
   end
 
   defp notify_transaction_id_is_still_pending(params) do
-    url = UtilityContext.get_url_or_value(:slack_webhook)
+    slack_webhook_token =
+      :slack_webhook_token
+      |> UtilityContext.get_url_or_value()
+      |> Base.decode64!()
+
+    url =
+      slack_webhook_token
+      |> Request.process_request_url(:slack_webhook_url)
 
     body = %{
       text: "Hi value customer. \n\n
@@ -296,7 +283,14 @@ defmodule DevChallengeRyan.Contexts.BlockChainContext do
 
   defp notify_webhook_status(params, error)
        when error in ["failed"] do
-    url = UtilityContext.get_url_or_value(:slack_webhook)
+    slack_webhook_token =
+      :slack_webhook_token
+      |> UtilityContext.get_url_or_value()
+      |> Base.decode64!()
+
+    url =
+      slack_webhook_token
+      |> Request.process_request_url(:slack_webhook_url)
 
     body = %{
       text: "Hi value customer. \n\n
@@ -308,10 +302,19 @@ defmodule DevChallengeRyan.Contexts.BlockChainContext do
 
     %{}
     |> Request.post(url, body, [])
+
+    {:ok, params}
   end
 
   defp notify_webhook_status(params, string) do
-    url = UtilityContext.get_url_or_value(:slack_webhook)
+    slack_webhook_token =
+      :slack_webhook_token
+      |> UtilityContext.get_url_or_value()
+      |> Base.decode64!()
+
+    url =
+      slack_webhook_token
+      |> Request.process_request_url(:slack_webhook_url)
 
     body = %{
       text: "Hi value customer. \n\n
@@ -322,6 +325,8 @@ defmodule DevChallengeRyan.Contexts.BlockChainContext do
 
     %{}
     |> Request.post(url, body, [])
+
+    {:ok, params}
   end
 
   defp transform_status("cancel"), do: "cancelled"

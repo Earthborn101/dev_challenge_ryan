@@ -27,7 +27,7 @@ defmodule DevChallengeRyanWeb.Request do
   end
 
   def delete(_conn, nil, _headers), do: {:invalid_url}
-  def deelte(_conn, _url, headers) when not is_list(headers), do: {:invalid_headers}
+  def delte(_conn, _url, headers) when not is_list(headers), do: {:invalid_headers}
 
   def delete(conn, url, headers, _options \\ []) when is_list(headers) do
     options = [timeout: 600_000, recv_timeout: 600_000]
@@ -42,7 +42,7 @@ defmodule DevChallengeRyanWeb.Request do
       {:ok, %HTTPoison.Response{status_code: 404}} ->
         {:not_found}
 
-      {:ok, %HTTPoison.Response{status_code: code, body: body}} ->
+      {:ok, %HTTPoison.Response{status_code: _code, body: body}} ->
         process_response_body(:bad_request, body)
 
       {:error, %HTTPoison.Error{reason: reason}} ->

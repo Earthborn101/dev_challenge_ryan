@@ -4,42 +4,57 @@ defmodule DevChallengeRyanWeb.BackgroundJob do
 
   alias DevChallengeRyan.Contexts.BlockChainContext
 
-  def start_link(_) do
+  def start_link do
     GenServer.start_link(__MODULE__, [], name: TransactionJob)
   end
 
   def init(state) do
     # Schedule work to be performed at some point
+    check_ongoing_work(state)
     {:ok, state}
   end
 
-  def call_ongoing do
-    GenServer.call(TransactionJob, :get_pending_transaction_ids)
+  def handle_info(:work, state) do
+    check_ongoing_work(state)
   end
 
-  def add_notification(args) do
-    GenServer.cast(TransactionJob, {:check_transaction_id, args})
-  end
-
-  def run_notification(args) do
-    GenServer.cast(TransactionJob, {:run_pending_ids, args})
-  end
-
-  @impl true
-  def handle_cast({:check_transaction_id, args}, state) do
-    state = state ++ [args]
+  def handle_info(_, state) do
     {:noreply, state}
   end
 
-  def handle_cast({:run_pending_ids, args}, state) do
-    params =
-      args
-      |> Map.put(:start_time, Timex.now())
+  defp check_ongoing_work([] = state) do
+    Process.send_after(self(), :work, 5_000)
+    {:noreply, state}
+  end
 
-    BlockChainContext.check_transaction_notification(params)
+  defp check_ongoing_work([head | tails]) do
+    head
+    |> BlockChainContext.check_transaction_notification()
+    |> check_job_return(tails)
+  end
 
-    state = Enum.filter(state, &(&1.txid !== args.txid))
+  defp check_job_return({:ok, _params}, state) do
+    Process.send_after(self(), :work, 5_000)
+    {:noreply, state}
+  end
 
+  defp check_job_return({:pending, params}, state) do
+    state = state ++ [params]
+    Process.send_after(self(), :work, 5_000)
+    {:noreply, state}
+  end
+
+  def call_ongoing do
+    GenServer.call(TransactionJob, :get_pending_transaction_ids, 10_000)
+  end
+
+  def add_notification(args) do
+    GenServer.cast(TransactionJob, {:add_notification, args})
+  end
+
+  @impl true
+  def handle_cast({:add_notification, args}, state) do
+    state = state ++ [args]
     {:noreply, state}
   end
 
@@ -49,10 +64,6 @@ defmodule DevChallengeRyanWeb.BackgroundJob do
   end
 
   def handle_call(:get_pending_transaction_ids, _from, state) do
-    {:noreply, state}
-  end
-
-  def handle_info(_, state) do
     {:noreply, state}
   end
 end

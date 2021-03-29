@@ -1,6 +1,7 @@
 # Developer Coding Challenge
 
 Candidate: Ryan Christopher D. Adiao
+
 This application is written using Phoenix Elixir. Please refer to the APIs below to 
 
 ## APIs Developed

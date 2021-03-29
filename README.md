@@ -2,7 +2,7 @@
 
 Candidate: Ryan Christopher D. Adiao
 
-This application is written using Phoenix Elixir. Please refer to the APIs below to 
+This application is written using Phoenix Elixir. Please refer to the APIs below. 
 
 ## APIs Developed
   * POST /api/v1/add-transaction-id
